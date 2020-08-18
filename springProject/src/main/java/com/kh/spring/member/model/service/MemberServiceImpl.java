@@ -95,6 +95,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	// 회원 정보 수정 Service
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public int updateMember(Member upMember) {
 		

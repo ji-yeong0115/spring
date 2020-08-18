@@ -27,9 +27,16 @@ public interface MemberService {
 	 * @throws Exception
 	 */
 	public abstract int signUp(Member signUpMember) throws Exception;
-	
 
+	/** 아이디 중복 체크 Service
+	 * @param memberId
+	 * @return result
+	 */
 	public abstract int idDupCheck(String memberId);
 
+	/** 회원정보 수정 Service
+	 * @param upMember
+	 * @return result
+	 */
 	public abstract int updateMember(Member upMember);
 }

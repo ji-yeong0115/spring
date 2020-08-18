@@ -292,13 +292,14 @@ public class MemberController {
 	// 회원 정보 수정
 	@RequestMapping("updateAction")
 	public String updateAction(Member upMember, Model model,
-					RedirectAttributes rdAttr) {
+					RedirectAttributes rdAttr, HttpServletRequest request) {
 		
 		// session scope에 있는 로그인 회원 정보를 얻어와
 		// id, name, grade 추출 -> upMember에 세팅
 		Member loginMember = (Member)(model.getAttribute("loginMember"));
 		
-		
+		upMember.setMemberNo(loginMember.getMemberNo());
+		upMember.setMemberEnrollDate(loginMember.getMemberEnrollDate());
 		upMember.setMemberId(loginMember.getMemberId());
 		upMember.setMemberName(loginMember.getMemberName());
 		upMember.setMemberGrade(loginMember.getMemberGrade());
@@ -328,7 +329,20 @@ public class MemberController {
 		rdAttr.addFlashAttribute("status", status);
 		rdAttr.addFlashAttribute("msg", msg);
 		
-		return "redirect:mypage";
+		// select -> forward
+		// select를 하는 경우 DB에서 조회한 데이터를 이용해 응답 화면을 만들어야 함
+		// -> 응답 화면을 쉽게 만들기 위해 사용하는게 JSP -> JSP로 요청을 위임하기 위해서는
+		//	  forward를 해야함
+		//	단, 로그인 같이 조회 데이터를 Session에 세팅하는 경우는 redirect를 진행함
+		
+		
+		// DML -> redirect
+		// DML 수행 시 DB 데이터가 변환되고 이를 다시 select해서 보여주는 상황이 많음
+		// -> select 결과를 보여주는 작업은 forward 통해서 진행을 해야함
+		// -> forward를 진행한느 주소를 다시 요청함(redirect)
+		
+	
+		return "redirect:" + request.getHeader("referer");
 		
 	}
 
