@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="memberMapper">
+	<!-- namespace : 해당 mapper 파일의 별칭을 지정 -->
+	<!-- mapper.xml : SQL을 작성해두고 외부 요청한 SQL문을 매핑해주는 문서 -->
+	
+	<!-- ResultMap 작성
+		- <resultMap> 태그는 마이바티스에서 가장 중요하고 강력한 기능을 가진 태그
+		- Select 진행 시 조회되는 결과 집합(ResultSet)을 원하는 VO(or DTO)에 매핑 시켜줄 때
+		  필드명과 컬럼명이 다를 경우 이를 지정해서 매핑시킬 수 있게 하는 태그 -->
+	<resultMap id="memberResultSet" type="Member">
+		<!-- DB 기본키에 해당하는 필드와 컬럼을 작성 -->
+		<id property="memberNo" column="MEMBER_NO"/>
+		
+		<!-- DB 일반 컬럼에 해당하는 필드와 컬럼을 작성 -->
+		<result property="memberId" column="MEMBER_ID"/>
+		<result property="memberPwd" column="MEMBER_PWD"/>
+		<result property="memberName" column="MEMBER_NM"/>
+		<result property="memberPhone" column="MEMBER_PHONE"/>
+		<result property="memberEmail" column="MEMBER_EMAIL"/>
+		<result property="memberAddress" column="MEMBER_ADDRESS"/>
+		<result property="memberInterest" column="MEMBER_INTEREST"/>
+		<result property="memberEnrollDate" column="MEMBER_ENROLL_DATE"/>
+		<result property="memberStatus" column="MEMBER_STATUS"/>
+		<result property="memberGrade" column="MEMBER_GRADE"/>
+	</resultMap>
+	
+	<!-- parameterType="Member"에서 "Member"는
+		com.kh.spring.member.model.vo.Member의 별칭 (mybatis-config.xml에서 지정) -->
+	<select id="loginMember" parameterType="Member" resultMap="memberResultSet" >
+		SELECT * FROM MEMBER
+		WHERE MEMBER_ID = #{memberId}
+		<!-- AND MEMBER_PWD = #{memberPwd} -->
+		AND MEMBER_STATUS='Y'
+	</select>
+	
+	
+	<!-- 회원가입 -->
+	<!-- insert, update, delete는 반환형(resultType)이 모두 int형으로 고정
+		별도의 resultType 속성을 작성할 필요 없음 -->
+	<insert id="signUp" parameterType="Member">
+		INSERT INTO MEMBER
+		VALUES(SEQ_MNO.NEXTVAL, #{memberId}, #{memberPwd}, 
+			#{memberName}, #{memberPhone}, #{memberEmail}, 
+			#{memberAddress}, #{memberInterest}, 
+			DEFAULT, DEFAULT, DEFAULT)
+	</insert>
+</mapper>
