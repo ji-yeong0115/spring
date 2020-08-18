@@ -20,20 +20,24 @@ public class MemberServiceImpl implements MemberService {
 	private BCryptPasswordEncoder bcPwd;
 	
 	@Override
-	public Member login(Member member) throws Exception {
+	public Member login(Member member) {
 		
 		// bcrypt 방식으로 암호화를 진행한 경우
 		// BCryptPasswordEncoder에서 제공하는 matches() 메소드를 이용해서
 		// 입력 받은 비밀번호와 DB에 저장되어 있는 암호화된 비밀번호가 일치하는지 확인하는 작업 필요
 		Member loginMember = memberDAO.login(member);
 		
-		if(!bcPwd.matches(member.getMemberPwd(), loginMember.getMemberPwd()) ) {
-			// 입력한 비밀번호가 DB에 저장된 값과 같지 않을 경우
-			loginMember = null;
-		} else {
-			// 비교가 끝난 조회된 비밀번호 삭제
-			loginMember.setMemberPwd(null);
+		if(loginMember != null) {
+			
+			if(!bcPwd.matches(member.getMemberPwd(), loginMember.getMemberPwd()) ) {
+				// 입력한 비밀번호가 DB에 저장된 값과 같지 않을 경우
+				loginMember = null;
+			} else {
+				// 비교가 끝난 조회된 비밀번호 삭제
+				loginMember.setMemberPwd(null);
+			}
 		}
+	
 		
 		return loginMember;
 	}
@@ -82,6 +86,12 @@ public class MemberServiceImpl implements MemberService {
 		int result = memberDAO.signUp(signUpMember);
 		
 		return result;
+	}
+
+	// ID 중복 검사  Service 구현
+	@Override
+	public int idDupCheck(String memberId){
+		return memberDAO.idDupCheck(memberId);
 	}
 
 }

@@ -1,15 +1,22 @@
 package com.kh.spring.member.controller;
 
+import java.sql.SQLException;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -120,7 +127,12 @@ public class MemberController {
 	
 	// 어노테이션은 필요에 따라 작성하면 되지만 충돌 또는 가독성을 생각하여 생략을 할지 말지를 잘 정해야 함
 	@RequestMapping("loginAction")
-	public String loginAction(Member member, Model model, RedirectAttributes rdAttr) {
+	public String loginAction(Member member, Model model, RedirectAttributes rdAttr
+						, String saveId, HttpServletResponse response) {
+		
+		// saveId : checkbox가 체크가 되어진 경우 
+		//			별도의 value 속성이 없으면 "on"이란느 문자열이 전달됨
+		//			checkbox가  체크가 되어 있지 않으면 null
 		
 		// Model : 전달하고자하는 데이터를 맵형식(K, V) 형태로 담아 전달하는 객체
 		// 기존적으로 scope는 request임
@@ -128,7 +140,6 @@ public class MemberController {
 		// Controller 클래스명 위에 @SessionAttributes() 어노테이션을 작성해야 함
 		System.out.println(member.getMemberId() + " / " + member.getMemberPwd());
 		
-		try {
 			Member loginMember = memberService.login(member);
 			
 			if(loginMember == null) {
@@ -139,12 +150,24 @@ public class MemberController {
 				model.addAttribute("loginMember", loginMember);
 				// request scope로 "loginMember"라는 key를 추가하고
 				// value로 loginMember 객체를 지정
+				
+				// 쿠키 객체 생성
+				Cookie cookie = new Cookie("saveId", member.getMemberId());
+				
+				if(saveId != null) {
+					// 아이디 저장이 체크된 경우
+					// 쿠키 생성
+					// response를 사용하여 쿠키 생성
+					cookie.setMaxAge(60 * 60 * 24 * 7); // 쿠키 1주일 유지
+				}else {
+					cookie.setMaxAge(0);
+				}
+				
+				response.addCookie(cookie);
 			}
 			
 			System.out.println(loginMember);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 		
 		return "redirect:/"; // 메인페이지 재요청
 	}
@@ -204,4 +227,63 @@ public class MemberController {
 		
 		return "redirect:/";
 	}
+	
+	// 아이디 중복 체크
+	/* @ResponseBody
+	 * 메소드에서 리턴되는 값을 View Resolver로 전달하지 않고
+	 * 비동기로 요청된 곳으로 리턴값을 가지고 돌아가게 하는 역할
+	 * 
+	 * HTTP Response객체의 Body 부분에 리턴 값을 담게하여
+	 * jsp로 포워드 되지 않고 기존 요청 페이지로 데이터를 전달하게 함
+	 */
+	
+	
+	@ResponseBody
+	@RequestMapping("idDupCheck")
+	public String idDupCheck(String memberId){
+		int result = memberService.idDupCheck(memberId);
+		
+		return result+"";
+	}
+	
+	
+	
+	/* 스프링에서 예외를 처리하는 방법
+	 * 1) try-catch, throws를 이용한 예외 처리 방법
+	 * -> 메소드 레벨
+	 * 
+	 * 2) @ExceptionHandler -> 클래스(컨트롤러) 레벨
+	 * (해당 컨트롤러에서 발생하는 모든 예외를 처리하는 메소드)
+	 * 
+	 * 3) @ControllerAdvice -> 전역 레벨
+	 * (해당 프로젝트에 발생하는 모든 예외를 처리하는 하나의 클래스)
+	 * 
+	 */
+	
+	// DB 관련 예외가 발생할 경우 처리하는 메소드
+	@ExceptionHandler({SQLException.class, BadSqlGrammarException.class})
+	public String dbException(Exception e, Model model) {
+		e.printStackTrace();
+		
+		model.addAttribute("errorMsg", "데이터베이스 관련 예외 발생");
+		
+		return "common/errorPage";
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public String etcException(Exception e, Model model
+				, HttpServletRequest request) {
+		e.printStackTrace();
+		
+		System.out.println(request.getRequestURI());
+		// 예외가 발생한 요청 주소
+		System.out.println(e.getStackTrace()[0]); // 예외 내용의 첫줄
+		System.out.println(e.getMessage()); // 예외 관련 메시지 출력
+		
+		model.addAttribute("errorMsg", "기타 예외 발생");
+		
+		return "common/errorPage";
+	}
+	
+	
 }

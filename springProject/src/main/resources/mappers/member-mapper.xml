@@ -45,4 +45,18 @@
 			#{memberAddress}, #{memberInterest}, 
 			DEFAULT, DEFAULT, DEFAULT)
 	</insert>
+	
+	<!-- ID 중복 검사 -->
+	<!-- parameter/resultType 작성 시 mybatis 내장 별칭을 잘 확인할 것
+		String -> string
+		int -> _int
+		List -> list
+	 -->
+	<select id="idDupCheck" parameterType="string" resultType="_int">
+			SELECT COUNT(*) FROM MEMBER
+			WHERE MEMBER_ID = #{memberId}
+			AND MEMBER_STATUS = 'Y'
+	</select>
+	
+	
 </mapper>

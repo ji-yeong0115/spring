@@ -19,7 +19,7 @@ public interface MemberService {
 	 * @return loginMember
 	 * @throws Exception
 	 */
-	public abstract Member login(Member member) throws Exception; // 추상 메소드
+	public abstract Member login(Member member);// 추상 메소드
 
 	/** 회원가입 Service
 	 * @param signUpMember
@@ -27,4 +27,7 @@ public interface MemberService {
 	 * @throws Exception
 	 */
 	public abstract int signUp(Member signUpMember) throws Exception;
+	
+
+	public abstract int idDupCheck(String memberId);
 }

@@ -265,9 +265,24 @@
 				signUpCheck.id = false;
 			} else {
 				// 비동기 아이디 중복검사(ajax)
-				
-				$("#checkId").text("유효한 아이디 형식입니다.").css("color", "green");
-				signUpCheck.id = true;
+				$.ajax({
+					url : "idDupCheck",
+					data : {"memberId" : $id.val()},
+					type : "GET",
+					success : function(result){
+						
+						if(result == 0){
+							$("#checkId").text("사용가능한 아이디 입니다.").css("color", "green");
+							signUpCheck.id = true;
+						}else{
+							$("#checkId").text("이미 사용 중인 아이디 입니다.").css("color", "red");
+							signUpCheck.id = false;
+						}
+						
+					}, error : function(){
+						consol.log("아이디 중복 검사 실패");
+					}
+				});
 			}
 		});
 			
