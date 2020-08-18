@@ -30,4 +30,6 @@ public interface MemberService {
 	
 
 	public abstract int idDupCheck(String memberId);
+
+	public abstract int updateMember(Member upMember);
 }

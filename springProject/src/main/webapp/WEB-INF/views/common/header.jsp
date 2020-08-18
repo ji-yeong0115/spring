@@ -25,18 +25,24 @@
   
    	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
    	
-   	<style>
-   	body {
-	  margin: 0;
-	  font-family: "Muli", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-	  font-size: 1rem;
-	  font-weight: 400;
-	  line-height: 1.5;
-	  color: #212529;
-	  text-align: left;
-	  background-color: #fff;
-	}
-   	</style>
+      <style>
+      body {
+	     margin: 0;
+	     font-family: "Muli", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	     font-size: 1rem;
+	     font-weight: 400;
+	     line-height: 1.5;
+	     color: #212529;
+	     text-align: left;
+	     background-color: #fff;
+	     min-height: 85%;
+	  }
+   
+	  h1, h2, h3, h4, h5, h6 {
+	     text-transform: initial;
+	  }
+	      
+      </style>
    	
 	<!-- sweetalert : alert창을 꾸밀 수 있게 해주는 라이브러리 https://sweetalert.js.org/ -->
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -68,7 +74,7 @@
 		                <li class="nav-item"><a class="nav-link" href="${contextPath}/member/login">Login</a></li>
             		</c:when>
             		<c:otherwise>
-		                <li class="nav-item"><a class="nav-link" href="#">${loginMember.memberName}</a></li>
+		                <li class="nav-item"><a class="nav-link" href="${contextPath}/member/mypage">${loginMember.memberName}</a></li>
 		                <li class="nav-item"><a class="nav-link" href="${contextPath}/member/logout">Logout</a></li>
             		</c:otherwise>
             	</c:choose>

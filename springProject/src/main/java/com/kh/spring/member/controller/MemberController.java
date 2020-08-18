@@ -237,13 +237,17 @@ public class MemberController {
 	 * jsp로 포워드 되지 않고 기존 요청 페이지로 데이터를 전달하게 함
 	 */
 	
-	
 	@ResponseBody
 	@RequestMapping("idDupCheck")
 	public String idDupCheck(String memberId){
 		int result = memberService.idDupCheck(memberId);
 		
 		return result+"";
+	}
+	
+	@RequestMapping("mypage")
+	public String myPage() {
+		return "member/mypage";
 	}
 	
 	
@@ -284,6 +288,50 @@ public class MemberController {
 		
 		return "common/errorPage";
 	}
+	
+	// 회원 정보 수정
+	@RequestMapping("updateAction")
+	public String updateAction(Member upMember, Model model,
+					RedirectAttributes rdAttr) {
+		
+		// session scope에 있는 로그인 회원 정보를 얻어와
+		// id, name, grade 추출 -> upMember에 세팅
+		Member loginMember = (Member)(model.getAttribute("loginMember"));
+		
+		
+		upMember.setMemberId(loginMember.getMemberId());
+		upMember.setMemberName(loginMember.getMemberName());
+		upMember.setMemberGrade(loginMember.getMemberGrade());
+		
+		// 회원 정보 수정 Service 호출
+		int result = memberService.updateMember(upMember);
+		
+		System.out.println(upMember);
+		// update 완료 후 수정 된 회원 정보를 다시 Session애 올림
+		// -> model.addAttribute("loginMember", upMember")
+		// @ SessionAttributes()
+		
+		String status = null;
+		String msg = null;
+		
+		if(result > 0) {
+			status = "success";
+			msg = "수정 성공 !";
+			
+			model.addAttribute("loginMember", upMember);
+			 
+		} else {
+			status = "error";
+			msg = "수정 실패";
+		}
+		
+		rdAttr.addFlashAttribute("status", status);
+		rdAttr.addFlashAttribute("msg", msg);
+		
+		return "redirect:mypage";
+		
+	}
+
 	
 	
 }

@@ -41,4 +41,8 @@ public class MemberDAO {
 		return sqlSession.selectOne("memberMapper.idDupCheck", memberId);
 	}
 
+	public int upMember(Member upMember) {
+		return sqlSession.update("memberMapper.upMember", upMember);
+	}
+
 }

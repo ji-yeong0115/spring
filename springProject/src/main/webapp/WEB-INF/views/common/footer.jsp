@@ -6,6 +6,7 @@
 <style>
 	.footer{
 		background-color: #bbb;
+		width: 100%;
 	}
 </style>
 </head>
